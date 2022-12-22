@@ -1,0 +1,142 @@
+---
+title: "Divvy Trip Bike Case Study"
+author: "Barb"
+date: "2022-12-15"
+output: html_document
+---
+
+
+***Visualization***
+A graphical representation of the divvy trip is created to convey meaningful insight from the analytically findings on the differences between causal riders and annual members using primary pie chart and bar graph to show the differences between causal riders and annual members.
+
+***Analysis***
+Casual members predominately ride on the weekend whereas annual members use different rides on weekdays.
+Casual member ride duration is almost half the time as annual members.
+Both casual riders and annual member utilize classic bikes the most, accompanied by electronic bike and docked bike as the least use of all bikes.
+
+***Recommendations***
+Since casual rider ride time is almost half the time as annual members, a cost benefit analysis should be created to show causal rider how much money would be saved over time if they convert to annual membership.
+•	Create optional memberships, annual membership (356 days) or weekend only annual membership (53 weeks) to generate reoccurring revenue to maintain constant and consistent stream of revenue.
+•	Create a discount feature associated with annual memberships linked to festive periods, sports events, or concerts, etc.to give members easy access to these events within their area.
+•	Create seamless features that accumulate points and automatically allocate points to members to be used through the year or allow members to share the points with friends.
+•	Create features that keep members informed, educate them about bike usage, or related events, features which reward members for good behavior to enforce change in behaviors. 
+
+```{r please load these libraries before executing to the code} 
+library(dplyr) 
+library(tibble) 
+library(ggplot2)
+library(tidyverse)
+
+```
+
+```{r}
+journey <- read.csv("C:/rprogramming/annual_divvy_journey.csv")
+#journey
+```
+
+
+```{r}
+cnt_user_type<-table(journey$member_casual) 
+#cnt_user_type
+```
+
+``` {r Types of Members}
+users_type <- cnt_user_type
+labels <- journey$member_casual
+piepercentage <- round(100* users_type/sum(users_type),1)
+pie(users_type,labels =piepercentage, main = "Types of Members", col= users_type)
+legend("topright",c("Casual", "Member"), cex = 0.9,
+fill = users_type)
+```
+
+
+```{r Member Bike Preferences}
+ pllt <-ggplot(data =journey) +  
+  geom_bar(aes(x=member_casual, fill = rideable_type), position = "dodge", width = 0.5)+
+  labs(x = "Types of Customers", 
+       y = "No. of Riders", 
+       title = " Casual Rider vs Member Bike Preferences") +
+  scale_fill_brewer(palette = "Set0")
+
+pllt
+
+```
+
+```{r Total number of rides for each member}
+journey %>% 
+  group_by(member_casual, ride_id) %>% 
+  summarise(number_of_rides = n(), .groups="drop") %>% 
+ggplot()+
+geom_col(mapping =aes(x=member_casual, y =ride_id, fill = member_casual))
+
+```
+
+```{r Member Average Ride distribution}
+journey %>% 
+  group_by(member_casual) %>% 
+  summarise(average_ride_duration = mean(trip_duration)) %>% 
+  ggplot() +
+  geom_col(mapping = aes(x = member_casual, y = average_ride_duration, fill = member_casual))+
+  labs(title = "Member vs Casual Riders Average Rider Ride Duration")
+  xlab("Member and Casual Rider")
+  ylab("Trip Duration")
+  
+```
+```{r}
+
+journey$weekday <- ordered(journey$day_of_the_week,
+                levels = c("Sunday","Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"))
+#na.omit(journey$weekday)
+```
+
+```{r Weekdays Ride Distribution}
+journey %>% 
+ggplot(aes(x=member_casual, fill =rideable_type)) +
+labs(x ="Type of Customers", title="Weekday Ride Distribution") +
+geom_bar() +
+facet_wrap(~weekday)+
+ylab('Hourly')
+
+```
+
+```{r }
+journey$workdays <- ordered(journey$day_of_the_week,
+                levels = c( "Monday", "Tuesday", "Wednesday", "Thursday", "Friday"))
+#na.omit(journey$workday)
+```
+
+```{r Workdays Ride Distribution}
+journey %>% 
+  filter(!is.na(workdays)) %>% 
+  group_by(member_casual, workdays) %>% 
+  summarise(number_of_rides = n(), .groups="drop") %>% 
+  arrange(member_casual, workdays) %>% 
+  ggplot(aes(x = workdays, y = number_of_rides, fill= member_casual)) +
+  labs(title = "Workdays Total Ride Distribution :Member vs Casual Riders") + 
+  geom_col(width =0.5, position = position_dodge(width=0.5)) 
+  scale_y_continuous(labels= function(x) format(x, scientific =FALSE))
+
+```
+
+```{r}
+
+journey$weekend <- ordered(journey$day_of_the_week,
+                levels = c("Sunday", "Friday", "Saturday"))
+#na.omit(journey$weekend)
+```
+
+```{r Weekend Ride Distribution}
+
+  journey %>% 
+  filter(!is.na(weekend)) %>% 
+  
+  group_by(member_casual, weekend) %>% 
+  summarise(number_of_rides = n(), .groups="drop") %>% 
+  arrange(member_casual, weekend) %>% 
+  ggplot(aes(x = weekend, y = number_of_rides, fill= member_casual)) +
+  labs(title = "Weekend Ride Distribution :Member vs Casual Riders") + 
+  geom_col(width =0.5, position = position_dodge(width=0.5)) +
+  scale_y_continuous(labels= function(x) format(x, scientific =FALSE))
+```
+
+
