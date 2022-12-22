@@ -5,22 +5,6 @@ date: "2022-12-15"
 output: html_document
 ---
 
-
-***Visualization***
-A graphical representation of the divvy trip is created to convey meaningful insight from the analytically findings on the differences between causal riders and annual members using primary pie chart and bar graph to show the differences between causal riders and annual members.
-
-***Analysis***
-Casual members predominately ride on the weekend whereas annual members use different rides on weekdays.
-Casual member ride duration is almost half the time as annual members.
-Both casual riders and annual member utilize classic bikes the most, accompanied by electronic bike and docked bike as the least use of all bikes.
-
-***Recommendations***
-Since casual rider ride time is almost half the time as annual members, a cost benefit analysis should be created to show causal rider how much money would be saved over time if they convert to annual membership.
-•	Create optional memberships, annual membership (356 days) or weekend only annual membership (53 weeks) to generate reoccurring revenue to maintain constant and consistent stream of revenue.
-•	Create a discount feature associated with annual memberships linked to festive periods, sports events, or concerts, etc.to give members easy access to these events within their area.
-•	Create seamless features that accumulate points and automatically allocate points to members to be used through the year or allow members to share the points with friends.
-•	Create features that keep members informed, educate them about bike usage, or related events, features which reward members for good behavior to enforce change in behaviors. 
-
 ```{r please load these libraries before executing to the code} 
 library(dplyr) 
 library(tibble) 
