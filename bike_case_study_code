@@ -1,0 +1,94 @@
+### please load these libraries before executing to the code ## 
+library(lessR) 
+library(skimr) 
+library(dplyr) 
+library(tibble) 
+library(ggplot2)
+library(tidyverse)
+library(scales)
+
+
+### Consolidate twelve month data into a single file  for analysis ###
+```{r  display the total of each member within the dataframe}
+journey <- read.csv("C:/rprogramming/annual_divvy_journey.csv")
+journey
+
+### Create a backup for the file ###
+write.csv('journey.csv',row.name = TRUE)
+
+###Data Dictionary###
+member_casual (categorical): Type so members, member and casual 	
+rider_id	  (chr) :unique Id assigned to a type of bike		
+rideable_types  (chr): type of bikes:classic_bike,docked_bike, electronic_bike 		
+start_station_id (chr) identifies the station at which a ride started		
+start_station_name (chr) the station at which the ride started				
+started_at	 (chr) start date and time at which a ride started		
+end_station_id (chr) a number or string that identifies the station at which a ride ended		
+end_station_name (chr) station name at which a ride ended		
+ended_at	 (chr) end date and time at which a ride ended 	
+start_lon	 (num)longitude coordinate at which a ride ended
+end_lon	(num)longitude coordinate at which a ride ended		
+stat_lat	(num)latitude coordinate at which a ride started		 
+end_lat	(num)latitude coordinate at which a ride started		
+
+###Inspecting the Data Frame ###
+--- An interactive view of the data 
+View(journey)
+
+---print the first six variables within the data frame
+print(head(journey))
+
+---variables within the data frame 
+names(journey)
+
+--- variables attributes within a data frame
+str(journey)
+
+--- summaries result of variables within a data frame 
+summary(journey)
+
+### Data Cleaning ###
+--- table list the frequencies of elements within the dataframe
+cnt_user_type<-table(journey$member_casual) 
+
+---string inconsistencies 
+unique(journey$start_station_id)
+unique(journey$end_station_id)
+unique(journey$start_station_name)
+unique(journey$end_station_name)
+unique(journey$start_ride_id)
+--- inconsistent datatype, timestamp stored as char datatype
+typeof(journey$day_of_the_week)
+--- Bike trips without station ids
+station_withoutid <-data.frame(journey)  
+station_withoutid %>% 
+  dplyr ::group_by(start_station_id, end_station_id,rideable_type, member_casual) %>% 
+  dplyr::summarise(trip_duration =mean(trip_duration, na.rm = TRUE), .groups ='drop')
+--- formatting dates
+chgstartdt <- na.omit(journey$started_at)
+str(chgstartdt)
+#change the startdate from a character to a date datatype
+hms_start_date <- data.frame(date =format(chgstartdt,format="%d/%m/%Y"), time =format(chgstartdt,format="%M"))
+hms_start_date
+
+###dealing with duplicates 
+#identify duplicates within a dataset, TRUE is return
+duplicated(journey$start_station_name)
+#which rows contain duplicate, return the first instance of duplicate
+ dups <-which(duplicated(journey$start_station_name))
+ dups
+end_station <-journey[duplicated(journey$end_station_name), ]
+end_station
+
+ 
+#remove duplicate rows
+distinct_start_station  <-journey[!duplicated(dups), ]
+distinct_start_station
+
+bike_stations <-journey[!duplicated(journey$end_station_name), ]
+bike_stations
+
+
+
+
+
